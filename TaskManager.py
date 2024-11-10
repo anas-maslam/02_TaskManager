@@ -46,6 +46,17 @@ class User:
             "password": self.password
         }
 
+    @staticmethod
+    def is_email_present(email):
+        if not os.path.exists("user.json"):
+            return False
+        with open("user.json", "r") as file:
+            users = json.load(file)
+            for user in users:
+                if user["email"] == email:
+                    return True
+        return False
+
     def append_user_json_file(self, name, email, password):
         users = []
         if os.path.exists("user.json"):
@@ -278,8 +289,12 @@ def manage_tasks():
             password = getpass.getpass("Enter password: ")
             passHash = hashlib.sha256(password.encode()).hexdigest()
 
-            user = User(name, email, passHash)
-            user.append_user_json_file(name, email, passHash)
+            userExists = User.is_email_present(email)
+            if userExists:
+                print("User already exists. Please login.")
+            else:
+                user = User(name, email, passHash)
+                user.append_user_json_file(name, email, passHash)
 
         if choice == "3":
             User.print_all_users()
