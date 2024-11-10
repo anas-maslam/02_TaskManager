@@ -1,6 +1,8 @@
 import datetime
 import json
 import os.path
+import getpass
+import hashlib
 
 
 class User:
@@ -259,9 +261,11 @@ def manage_tasks():
 
         if choice == "1":
             email = input("Enter email: ")
-            password = input("Enter password: ")
-            user = User("", email, password)
-            authenticated_username = user.login(email, password)
+            password = getpass.getpass("Enter password: ")
+            passHash = hashlib.sha256(password.encode()).hexdigest()
+
+            user = User("", email, passHash)
+            authenticated_username = user.login(email, passHash)
             if authenticated_username != "":
                 print(f"Welcome \"{authenticated_username}\": Login successful...")
                 break
@@ -271,9 +275,11 @@ def manage_tasks():
         if choice == "2":
             name = input("Enter name: ")
             email = input("Enter email: ")
-            password = input("Enter password: ")
-            user = User(name, email, password)
-            user.append_user_json_file(name, email, password)
+            password = getpass.getpass("Enter password: ")
+            passHash = hashlib.sha256(password.encode()).hexdigest()
+
+            user = User(name, email, passHash)
+            user.append_user_json_file(name, email, passHash)
 
         if choice == "3":
             User.print_all_users()
